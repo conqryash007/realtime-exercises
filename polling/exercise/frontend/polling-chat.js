@@ -5,7 +5,7 @@ const msgs = document.getElementById("msgs");
 let allChat = [];
 
 // the interval to poll at in milliseconds
-const INTERVAL = 3000;
+const INTERVAL = 3000; //ms
 
 // a submit listener on the form in the HTML
 chat.addEventListener("submit", function (e) {
@@ -15,13 +15,33 @@ chat.addEventListener("submit", function (e) {
 });
 
 async function postNewMsg(user, text) {
-  // post to /poll a new message
-  // write code here
+  const data = {
+    user,
+    txt: text,
+  };
+
+  const options = {
+    method: "POST",
+    body: JSON.stringify(data),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+
+  return fetch("/poll", options);
 }
 
 async function getNewMsgs() {
-  // poll the server
-  // write code here
+  let json;
+  try {
+    const res = await fetch("/poll");
+    json = await res.json();
+  } catch (err) {
+    console.log("polling err", err);
+  }
+  allChat = json.msg;
+  render();
+  setTimeout(getNewMsgs, INTERVAL);
 }
 
 function render() {
